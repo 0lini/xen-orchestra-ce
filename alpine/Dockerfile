@@ -19,6 +19,8 @@ RUN cd /home/node/xen-orchestra \
 # build
 WORKDIR /home/node/xen-orchestra
 RUN yarn config set network-timeout 300000
+# Disable Turbo telemetry
+RUN yarn turbo telemetry disable
 RUN yarn
 RUN yarn build
 # Add XOv6 UI
