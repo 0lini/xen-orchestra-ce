@@ -69,8 +69,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ezka77/xen-orchestra-ce:latest
-            ezka77/xen-orchestra-ce:${{ needs.pre-build.outputs.version }}
+            0lini/xen-orchestra-ce:latest
+            0lini/xen-orchestra-ce:${{ needs.pre-build.outputs.version }}
           build-args: |
             VERSION=${{ needs.pre-build.outputs.version }}
             XOSERVER=${{ needs.pre-build.outputs.xoserver }}
