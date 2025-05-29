@@ -105,4 +105,4 @@ ENV XO_HTTP_LISTEN_PORT="80"
 
 # Run the App
 WORKDIR /home/node/xen-orchestra/packages/xo-server/
-CMD ["node", "dist/cli.mjs"]
+CMD ["node", "yarn start"]
