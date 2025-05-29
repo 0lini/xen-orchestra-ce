@@ -21,6 +21,11 @@ WORKDIR /home/node/xen-orchestra
 RUN yarn config set network-timeout 300000
 RUN yarn
 RUN yarn build
+# Add XOv6 UI
+RUN yarn run turbo run build --filter @xen-orchestra/web
+
+# Install plugins
+RUN find ./packages/ -maxdepth 1 -mindepth 1 -not -name "xo-server" -not -name "xo-web" -not -name "xo-server-cloud" -not -name "xo-server-test" -not -name "xo-server-test-plugin" -exec ln -s {} ./packages/xo-server/node_modules \;
 
 ##  ~ Experimental ~
 # clean node_modules steps
@@ -42,12 +47,6 @@ RUN ./autogen.sh
 RUN ./configure
 RUN make && make install
 
-# REMCO
-FROM golang:alpine3.21 as build-remco
-
-RUN apk add --no-cache git
-RUN go install github.com/HeavyHorst/remco/cmd/remco@latest
-
 # Runner container
 FROM alpine:3.21
 
@@ -57,9 +56,9 @@ ARG XOWEB=latest
 
 LABEL version=$VERSION xo-server=$XOSERVER xo-web=$XOWEB
 
-ENV USER=node \
-    XOA_PLAN=5 \
-    DEBUG=xo:main
+ENV USER=node
+ENV XOA_PLAN=5
+ENV DEBUG=xo:main
 
 ## Add a user
 RUN mkdir -p /home/node
@@ -77,8 +76,7 @@ RUN apk add --no-cache \
   gettext \
   cifs-utils \
   openssl \
-  ntfs-3g \
-  lvm2
+  ntfs-3g
 
 RUN mkdir -p /storage /etc/xo-server
 
@@ -93,19 +91,10 @@ COPY --from=build-xoa /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
 COPY --from=build-libvhdi /usr/local/bin/vhdimount /usr/local/bin/vhdiinfo  /usr/local/bin/
 COPY --from=build-libvhdi /usr/local/lib/libvhdi* /usr/local/lib/
 
-# Healthcheck
-COPY healthcheck.js /usr/local/share/healthcheck.js
-HEALTHCHECK --interval=1m --timeout=12s --start-period=30s \  
- CMD /usr/bin/node /usr/local/share/healthcheck.js
-
-# Get remco
-COPY --from=build-remco /go/bin/remco /bin/remco
-ADD remco /etc/remco
-
 # Environment vars to control config
-ENV XO_HTTP_LISTEN_PORT="8000"
+ENV XO_HTTP_LISTEN_PORT="80"
 # List of configurable env vars:
-#    XO_HTTP_LISTEN_PORT="8000" \
+#    XO_HTTP_LISTEN_PORT="80" \
 #    XO_HTTP_REDIRECTTOHTTPS="false" \
 #    XO_HTTPS_LISTEN_PORT="443" \
 #    XO_HTTPS_LISTEN_CERT="./certificate.pem" \
@@ -115,4 +104,4 @@ ENV XO_HTTP_LISTEN_PORT="8000"
 
 # Run the App
 WORKDIR /home/node/xen-orchestra/packages/xo-server/
-CMD ["/bin/remco"]
+CMD ["node", "dist/cli.mjs"]
