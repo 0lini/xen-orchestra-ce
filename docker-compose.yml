@@ -1,6 +1,5 @@
-version: '3'
 services:
-    orchestra:
+    xen-orchestra:
         restart: unless-stopped
         image: ezka77/xen-orchestra-ce:latest
         container_name: XO_server
@@ -12,31 +11,19 @@ services:
             - DEBUG=xo:main
             - NODE_ENV=production
             - XOA_PLAN=5
-        #privileged: true
-        # SYS_ADMIN should be enough capability to use NFS mount
         cap_add:
           - SYS_ADMIN
-        # LVM 
         devices:
             - "/dev/fuse:/dev/fuse"
             - "/dev/loop-control:/dev/loop-control"
-        #     - "/dev/loop0:/dev/loop0"
+            - "/dev/loop0:/dev/loop0"
         volumes:
             - xo-data:/storage
-        logging: &default_logging
-            driver: "json-file"
-            options:
-                max-size: "1M"
-                max-file: "2"
-    redis:
+    db:
         restart: unless-stopped
-        container_name: XO_redis
         image: redis:alpine
-        command: redis-server --appendonly yes
         volumes:
             - redis-data:/data
-        logging:
-            <<: *default_logging
 
 volumes:
   xo-data:
