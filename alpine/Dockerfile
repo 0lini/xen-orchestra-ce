@@ -1,10 +1,10 @@
 ## Use same builder image for XOA & libvhdi
-FROM node:20.18-alpine3.21 as builder
+FROM node:20.18-alpine3.21 AS builder
 RUN apk add --no-cache git python3 g++ make bash fuse fuse-dev fuse3 fuse3-dev curl libc6-compat \
  automake autoconf libtool gettext-dev pkgconf fuse-dev fuse
 
 ## XOA Builder
-FROM builder as build-xoa
+FROM builder AS build-xoa
 
 WORKDIR /home/node
 #fix error - url loader
@@ -36,7 +36,7 @@ RUN npm prune --omit=dev --force
 ## 
 
 # VHDIMOUNT support
-FROM builder as build-libvhdi
+FROM builder AS build-libvhdi
 
 WORKDIR /home/node
 RUN git clone https://github.com/libyal/libvhdi.git
