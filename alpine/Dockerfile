@@ -64,6 +64,7 @@ ENV DEBUG=xo:main
 
 ## Add a user
 RUN mkdir -p /home/node
+RUN adduser -D -h /home/node node && chown -R node:node /home/node
 
 WORKDIR /home/node
 
