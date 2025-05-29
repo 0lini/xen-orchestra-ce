@@ -6,7 +6,7 @@ services:
         ports:
             - "8000:8000"
         depends_on:
-            - redis
+            - db
         environment:
             - DEBUG=xo:main
             - NODE_ENV=production
@@ -24,6 +24,11 @@ services:
         image: redis:alpine
         volumes:
             - redis-data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
 
 volumes:
   xo-data:
