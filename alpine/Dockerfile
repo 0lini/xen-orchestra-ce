@@ -95,5 +95,9 @@ COPY --from=build-libvhdi /usr/local/lib/libvhdi* /usr/local/lib/
 
 # Set working directory and user for running the application
 WORKDIR /home/node/xen-orchestra/packages/xo-server/
+
+# Rename sample config to config.toml if not already present
+RUN mv sample.config.toml config.toml
+
 USER node
 CMD ["yarn", "start"]
