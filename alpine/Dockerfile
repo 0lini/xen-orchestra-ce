@@ -76,7 +76,7 @@ ENV USER=node \
 RUN apk add --no-cache \
     su-exec bash util-linux nfs-utils \
     lvm2 fuse fuse3 gettext cifs-utils \
-    openssl ntfs-3g && \
+    openssl ntfs-3g yarn && \
     mkdir -p /home/node /storage /etc/xo-server && \
     adduser -D -h /home/node node && \
     chown -R node:node /home/node
